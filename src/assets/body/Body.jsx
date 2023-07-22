@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import Errors from "../../helpers/Errors";
+import AllComments from "../../helpers/AllComments";
 
 const Body = () => {
   const [data, setdata] = useState(null);
   const [username, setUsername] = useState("");
   const [commentErr, setCommentErr] = useState([]);
+  const [allComments, setAllComments] = useState([]);
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
   useEffect(() => {
@@ -15,6 +17,15 @@ const Body = () => {
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    const url = "http://localhost:3003/comments";
+    const fetchData = async () => {
+      const data = await fetch(url).then((response) => response.json());
+      console.log(data.comments);
+      setAllComments(data.comments);
+    };
+    fetchData();
+  });
 
   const handleSubmit = async (event) => {
     const apiUrl = "http://localhost:3003/post/comment";
@@ -53,7 +64,7 @@ const Body = () => {
       </section>
     );
   return (
-    <article className="container m-auto mt-8 min-h-screen flex flex-col items-center">
+    <article className="container m-auto my-8 min-h-screen flex flex-col items-center">
       <h1 className="font-bold text-3xl w-full text-center"> {data.title}</h1>
       <cite className="w-full text-center">
         {data.author.firstname + "   " + data.author.lastname}
@@ -71,6 +82,12 @@ const Body = () => {
           className="mt-8"
           dangerouslySetInnerHTML={{ __html: data.content }}
         />
+      </section>
+      <section>
+        <h2 className="font-bold text-lg">Comments</h2>
+        <div className="bg-gray-100 w-full px-4 my-8">
+          <AllComments comments={allComments} />
+        </div>
       </section>
       <section className="m-0">
         <form
